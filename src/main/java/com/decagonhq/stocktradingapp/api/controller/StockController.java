@@ -6,8 +6,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -34,9 +36,10 @@ import com.decagonhq.stocktradingapp.api.resource.Message;
 import com.decagonhq.stocktradingapp.api.resource.Stock;
 import com.decagonhq.stocktradingapp.api.resource.StockListResource;
 import com.decagonhq.stocktradingapp.api.resource.StockResource;
+import com.decagonhq.stocktradingapp.api.resource.TransactionListResource;
 import com.decagonhq.stocktradingapp.api.utility.UserHeader;
 
-import io.netty.handler.codec.http.HttpRequest;
+
 
 
 @RestController
@@ -95,7 +98,7 @@ public class StockController {
 		
 		Message msg = new Message();
 		
-		if (symbol != null && company != null && price > 0 && size > 0) {
+		if (symbol != null && company != null && price >= 0 && size >= 0) {
 			
 			//check if user have enough fund to buy this stock
 			double balance = userHeader.getUserBalance(request);
@@ -124,7 +127,7 @@ public class StockController {
 				withdrawalRepository.save(withdrawal);
 				
 				//update transactions history;
-				Transaction trans = new Transaction(user.getId(), purchase.getId(), 0);
+				Transaction trans = new Transaction(user.getId(), purchase.getId(), 2, created, purchase.getCompanyName());
 				transactionRepository.save(trans);
 				
 				msg.message = "Operation was successful.";
@@ -224,7 +227,7 @@ public class StockController {
 		FundRepository.save(fund);
 		
 		//update your transaction history
-		Transaction trans = new Transaction(purchase.getUserId(), 0, sell.getId());
+		Transaction trans = new Transaction(purchase.getUserId(), sell.getId(), 3, created, "Sold");
 		transactionRepository.save(trans);
 		
 		msg.message = "Operation was successful";
@@ -233,9 +236,69 @@ public class StockController {
 	
 	
 	//get stock transaction history
-	GetMapping("/stocktradingapp/stocks/transactions");
+	//takes date range, from and to
+	//examples: stocktradingapp/stocks/transactions?from=2019-01-01&to=2020-01-01
+	@GetMapping("/stocktradingapp/stocks/transactions")
 	public ResponseEntity<Object> getStockTransactionHhistory(HttpServletRequest request) {
 		User user = userHeader.getUserFromRequestHeader(request);
+		
+		Message msg = new Message();
+		
+		List<Transaction> transactions = transactionRepository.findAllByUserId(user.getId());
+		
+		NumberFormat formatter = NumberFormat.getCurrencyInstance();
+		//String price = formatter.format(purchase.getPrice());
+		if(transactions.size() > 0) {
+			
+			List<com.decagonhq.stocktradingapp.api.resource.Transaction> resources = new ArrayList<com.decagonhq.stocktradingapp.api.resource.Transaction>();
+			
+			transactions.forEach(trans-> {
+				
+				com.decagonhq.stocktradingapp.api.resource.Transaction res = new com.decagonhq.stocktradingapp.api.resource.Transaction();
+				String price = null;
+				switch (trans.getOptions()) {
+				case 1: //fund
+					Optional<Fund> fund = FundRepository.findById(trans.getTransactionId());
+					price = formatter.format(fund.get().getAmount());
+					res.setFund(price);
+					res.setDescription(fund.get().getDescription());
+					res.setCreated(fund.get().getCreated());
+					break;
+				case 2: //purchase
+					Optional<Purchase> purchase = purchaseRepository.findById(trans.getTransactionId());
+					price = formatter.format(purchase.get().getPrice());
+					res.setPurchase("("+price+")");
+					res.setDescription(purchase.get().getCompanyName());
+					res.setCreated(purchase.get().getCreated());
+					break;
+				default: //sell : 3
+					Optional<Sell> sell = sellRepository.findById(trans.getTransactionId()); 
+					price = formatter.format(sell.get().getPrice());
+					res.setSell(price);
+					res.setDescription("Sold stock");
+					res.setCreated(sell.get().getCreated());
+					break;
+				}
+				
+				
+				resources.add(res);
+				
+			});
+			
+			TransactionListResource transList = new TransactionListResource();
+			
+			double balance = userHeader.getUserBalance(request);
+			String account_balance  = formatter.format(balance);
+			transList.setBalance(account_balance);
+			transList.setTransactions(resources);
+			return ResponseEntity.ok(transList);
+		}
+		
+	
+		
+		msg.message = "No transactions yet. Please make use of the Api and come back :)" ;
+		return ResponseEntity.badRequest().body(msg);
+		
 		
 	}
 }

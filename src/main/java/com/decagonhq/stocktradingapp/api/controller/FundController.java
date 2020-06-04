@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.decagonhq.stocktradingapp.api.model.Fund;
 import com.decagonhq.stocktradingapp.api.model.FundRequest;
+import com.decagonhq.stocktradingapp.api.model.Transaction;
 import com.decagonhq.stocktradingapp.api.model.User;
 import com.decagonhq.stocktradingapp.api.repository.FundRepository;
+import com.decagonhq.stocktradingapp.api.repository.TransactionRepository;
 import com.decagonhq.stocktradingapp.api.repository.UserRepository;
 import com.decagonhq.stocktradingapp.api.resource.FundList;
 import com.decagonhq.stocktradingapp.api.resource.Message;
@@ -37,6 +39,9 @@ public class FundController {
 	@Autowired
 	private UserHeader userHeader;
 	
+	@Autowired
+	private TransactionRepository transactionRepository;
+	
 
 	
 	@PostMapping("/stocktradingapp/fund")
@@ -52,7 +57,15 @@ public class FundController {
 			Date date = new Date();
 			Timestamp ts=new Timestamp(date.getTime());
 			fund.setCreated(ts);
-			fundRepository.save(fund);
+			fund = fundRepository.save(fund);
+			
+			Date date1 = new Date();
+			Timestamp created =new Timestamp(date1.getTime());
+			
+			//update transactions
+			Transaction trans = new Transaction(user.getId(), fund.getId(), 1, created, fund.getDescription());
+			transactionRepository.save(trans);
+			
 			
 			Message success = new Message();
 			success.message = "The sum of "+ fund.getAmount() + " was added to your account successfully.";
