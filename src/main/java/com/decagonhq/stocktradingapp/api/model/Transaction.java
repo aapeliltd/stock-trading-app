@@ -1,6 +1,8 @@
 package com.decagonhq.stocktradingapp.api.model;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -8,12 +10,20 @@ import javax.persistence.Table;
 @Table(name = "transactions")
 public class Transaction {
 	
-	@Id
+	@Id @GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
 	private int userId;
 	private int purchaseId;
 	private int sellId;
 	
+	public Transaction() {}
+	
+	public Transaction(int userId, int purchaseId, int sellId) {
+		super();
+		this.userId = userId;
+		this.purchaseId = purchaseId;
+		this.sellId = sellId;
+	}
 	public int getId() {
 		return id;
 	}

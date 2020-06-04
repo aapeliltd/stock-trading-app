@@ -73,19 +73,10 @@ public class FundController {
 	@GetMapping("/stocktradingapp/funds/balance")
 	public ResponseEntity<Object> getFunds(HttpServletRequest request) {
 		
-		User user = userHeader.getUserFromRequestHeader(request);
-		
-		List<Fund> funds = fundRepository.findAllByUserId(user.getId());
-		double total = 0;
-		if(funds.size() > 0) {
-			for(final Fund fund : funds) {
-				total += fund.getAmount();
-			}
-		}
+		double balance = userHeader.getUserBalance(request);
 		FundList fundList = new FundList();
 		NumberFormat formatter = NumberFormat.getCurrencyInstance();
-		fundList.setBalance(formatter.format(total));
-		fundList.setFund(funds);
+		fundList.setBalance(formatter.format(balance));
 		
 		return ResponseEntity.ok(fundList);
 	}

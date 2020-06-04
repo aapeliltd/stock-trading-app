@@ -27,6 +27,7 @@ public class Purchase {
 	private int userId;
 	private String companyName;
 	private String companySymbol;
+	private boolean isSold;
 	
 	public Purchase() {}
 
@@ -38,6 +39,33 @@ public class Purchase {
 		this.userId = user_id;
 		this.companyName = companyName;
 		this.companySymbol = companySymbol;
+		
+	}
+	
+	
+
+	public boolean isSold() {
+		return isSold;
+	}
+
+	public void setSold(boolean isSold) {
+		this.isSold = isSold;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public int getUserId() {
+		return userId;
+	}
+
+	public void setUserId(int userId) {
+		this.userId = userId;
 	}
 
 	public int getSize() {
@@ -64,13 +92,6 @@ public class Purchase {
 		this.created = created;
 	}
 
-	public int getUser_id() {
-		return userId;
-	}
-
-	public void setUser_id(int user_id) {
-		this.userId = user_id;
-	}
 
 	public String getCompanyName() {
 		return companyName;

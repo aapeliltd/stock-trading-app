@@ -47,9 +47,9 @@ public class JsonWebUtility {
 
     private String createToken(Map<String, Object> claims, String subject) {
 
-    	// create token and set expiration to 5 hours
+    	// create token and set expiration to 20 hours
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 5))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 20))
                 .signWith(SignatureAlgorithm.HS256, secret).compact();
     }
 

@@ -61,9 +61,13 @@ public class JwtFilter extends OncePerRequestFilter {
 				
 			}
 		}
-		
-	 filterChain.doFilter(request, response);
+	
+		response.addHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.addHeader("decagonhq", "no-cache");
+        filterChain.doFilter(request, response);
 		
 	}
+	
+	
 
 }

@@ -16,15 +16,15 @@ public class Sell {
 	@Id @GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
 	private double price;
-	private double purchaseId;
+	private int purchaseId;
 	private Timestamp created;
 	
 	public Sell() {}
 
-	public Sell(double price, double purchase_id, Timestamp created) {
+	public Sell(double price, int purchaseId, Timestamp created) {
 		super();
 		this.price = price;
-		this.purchaseId = purchase_id;
+		this.purchaseId = purchaseId;
 		this.created = created;
 	}
 
@@ -36,21 +36,33 @@ public class Sell {
 		this.price = price;
 	}
 
-	public double getPurchase_id() {
+
+
+	public void setCreated(Timestamp created) {
+		this.created = created;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public int getPurchaseId() {
 		return purchaseId;
 	}
 
-	public void setPurchase_id(double purchase_id) {
-		this.purchaseId = purchase_id;
+	public void setPurchaseId(int purchaseId) {
+		this.purchaseId = purchaseId;
 	}
 
 	public Timestamp getCreated() {
 		return created;
 	}
-
-	public void setCreated(Timestamp created) {
-		this.created = created;
-	}
+	
+	
 	
 	
 	
