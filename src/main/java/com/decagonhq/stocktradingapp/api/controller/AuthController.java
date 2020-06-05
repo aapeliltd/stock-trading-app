@@ -14,23 +14,23 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.decagonhq.stocktradingapp.api.model.AuthRequest;
 import com.decagonhq.stocktradingapp.api.model.User;
-import com.decagonhq.stocktradingapp.api.repository.UserRepository;
 import com.decagonhq.stocktradingapp.api.resource.LoginResource;
 import com.decagonhq.stocktradingapp.api.resource.Message;
-import com.decagonhq.stocktradingapp.api.resource.RegisterResource;
 import com.decagonhq.stocktradingapp.api.resource.UserList;
 import com.decagonhq.stocktradingapp.api.resource.UserResource;
 import com.decagonhq.stocktradingapp.api.resource.ValidationResource;
+import com.decagonhq.stocktradingapp.api.services.UserService;
 import com.decagonhq.stocktradingapp.api.utility.JsonWebUtility;
 
-import antlr.collections.List;
-import lombok.var;
+import io.swagger.annotations.ApiOperation;
 
 @RestController
+@RequestMapping("/api/v1/stocktradingapp")
 public class AuthController {
 	
 	
@@ -41,10 +41,14 @@ public class AuthController {
 	private AuthenticationManager authenticateManager;
 	
 	@Autowired
-	private UserRepository userRepository;
+	private UserService userService;
 	
 	
-	@PostMapping("/stocktradingapp/login")
+	@PostMapping("/login")
+	@ApiOperation( value = "Login with username and password",
+	notes ="This Api is used to login to our application by providing username and password and token will be generated"
+			+ "for subsequent login",
+	response = LoginResource.class )
 	public ResponseEntity<LoginResource> login(@RequestBody AuthRequest user) {
 		
 		// validate username and password and if succeeded, please generate a token for this user.
@@ -61,7 +65,10 @@ public class AuthController {
 		return ResponseEntity.ok(login);
 		
 	}
-	@PostMapping("/stocktradingapp/register")
+	@PostMapping("/register")
+	@ApiOperation( value = " register in our application user email, username and password",
+	notes ="This Api is used to register in our application and return token for subsequent login",
+	response = LoginResource.class )
 	public ResponseEntity<Object> register(@RequestBody User user) {
 		
 		//do some validations
@@ -72,7 +79,7 @@ public class AuthController {
 			validationResource.date = new Date();
 			return ResponseEntity.badRequest().body(validationResource);
 		}
-		userRepository.save(user);
+		userService.addNewUser(user);
 		
 		// then validate user, generate token and return login resource.
 		LoginResource login = validateUser(user.getUserName());
@@ -81,7 +88,10 @@ public class AuthController {
 		
 	}
 	
-	@GetMapping("/stocktradingapp/users")
+	@GetMapping("/users")
+	@ApiOperation( value = "Look for the list of users",
+	notes ="This Api is used to fetch the list of users in the database",
+	response = UserList.class )
 	public ResponseEntity<Object> getAllRegisterUsers() {
 		
 		
@@ -89,7 +99,7 @@ public class AuthController {
 		
 		UserList userList = new UserList();
 		java.util.List<UserResource> resources = new ArrayList<UserResource>();
-		java.util.List<User> theUsers  =  userRepository.findAll();
+		java.util.List<User> theUsers  =  userService.getAllUsers();
 		
 		if(theUsers.size() > 0 ) {
 			int total = 0;
@@ -116,11 +126,14 @@ public class AuthController {
 		
 		
 	}
-	@GetMapping("/stocktradingapp/users/{id}")
+	@GetMapping("/users/{id}")
+	@ApiOperation( value = "Search user by Id",
+	notes ="This Api is used to get user by user Id",
+	response = UserResource.class )
 	public ResponseEntity<Object> getUserById(@PathVariable Optional<Integer> id) {
 		if(id != null) {
 			
-		 Optional<User> user = userRepository.findById(id.get());
+		 Optional<User> user = userService.getUserById(id.get());
 		 HashMap<String, String> map = new HashMap<>();
 		 UserResource userResource = new UserResource();
 		 userResource.setEmail(user.get().getEmail());

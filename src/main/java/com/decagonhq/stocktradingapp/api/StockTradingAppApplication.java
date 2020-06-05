@@ -1,5 +1,7 @@
 package com.decagonhq.stocktradingapp.api;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -18,7 +20,15 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.decagonhq.stocktradingapp.api.model.User;
 import com.decagonhq.stocktradingapp.api.repository.UserRepository;
 
+import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.service.ApiInfo;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
 @SpringBootApplication
+@EnableSwagger2
 public class StockTradingAppApplication {
 	
 	@Bean
@@ -48,6 +58,32 @@ public class StockTradingAppApplication {
 		//save the list of users to H2 database.
 		userRepository.saveAll(users);
 		
+	}
+	
+	@Bean
+	public Docket swaggerConfiguration() {
+		
+		return new Docket(DocumentationType.SWAGGER_2)
+				.select()
+				//.paths(PathSelectors.ant("/api/*"))
+				.apis(RequestHandlerSelectors.basePackage("com.decagonhq"))
+				.build()
+				.apiInfo(AppDocInfo());
+				
+	}
+	
+	@SuppressWarnings("deprecation")
+	private ApiInfo AppDocInfo() {
+		
+		return new ApiInfo(
+				"Stock Trading App", 
+				"Application is for a stock trading app, users can fund their"
+				+ " accounts, buy, and sell stocks as well as query transanction history",
+				"1.0", 
+				"https://decagonhq.com", 
+				"Decagon", 
+				"Api License- MIT", 
+				"https://decagonhq.com");
 	}
 	
 	

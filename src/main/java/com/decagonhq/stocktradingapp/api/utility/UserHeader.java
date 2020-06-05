@@ -1,35 +1,15 @@
 package com.decagonhq.stocktradingapp.api.utility;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.decagonhq.stocktradingapp.api.model.Fund;
-import com.decagonhq.stocktradingapp.api.model.User;
-import com.decagonhq.stocktradingapp.api.model.Withdrawal;
-import com.decagonhq.stocktradingapp.api.repository.FundRepository;
-import com.decagonhq.stocktradingapp.api.repository.UserRepository;
-import com.decagonhq.stocktradingapp.api.repository.WithdrawlResipotary;
 
 
 
 @Service
 public class UserHeader {
 	
-	@Autowired
-    private JsonWebUtility jsonWebUtility;
+
 	
-	@Autowired
-	private UserRepository userRepository;
-	
-	@Autowired
-	private FundRepository fundRepository;
-	
-	@Autowired
-	private WithdrawlResipotary withdrawalRepository;
-	
-	public User getUserFromRequestHeader(HttpServletRequest request) {
+	/*public User getUserFromRequestHeader(HttpServletRequest request) {
 		User user = getUser(request);
 		return user;
 	}
@@ -61,5 +41,6 @@ public class UserHeader {
 		User user = userRepository.findByUserName(userName);
 		return user;
 	}
+	*/
 
 }

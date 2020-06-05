@@ -3,8 +3,6 @@ package com.decagonhq.stocktradingapp.api.controller;
 import java.sql.Timestamp;
 import java.text.NumberFormat;
 import java.util.Date;
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,43 +10,46 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.decagonhq.stocktradingapp.api.model.Fund;
 import com.decagonhq.stocktradingapp.api.model.FundRequest;
 import com.decagonhq.stocktradingapp.api.model.Transaction;
 import com.decagonhq.stocktradingapp.api.model.User;
-import com.decagonhq.stocktradingapp.api.repository.FundRepository;
-import com.decagonhq.stocktradingapp.api.repository.TransactionRepository;
-import com.decagonhq.stocktradingapp.api.repository.UserRepository;
 import com.decagonhq.stocktradingapp.api.resource.FundList;
 import com.decagonhq.stocktradingapp.api.resource.Message;
-import com.decagonhq.stocktradingapp.api.utility.JsonWebUtility;
-import com.decagonhq.stocktradingapp.api.utility.UserHeader;
+import com.decagonhq.stocktradingapp.api.services.FundService;
+import com.decagonhq.stocktradingapp.api.services.TransactionService;
+import com.decagonhq.stocktradingapp.api.services.UserService;
 
-import io.netty.handler.codec.http.HttpRequest;
+import io.swagger.annotations.ApiOperation;
 
 @RestController
+@RequestMapping("/api/v1/stocktradingapp")
 public class FundController {
 	
 	
 	
 	@Autowired
-	private FundRepository fundRepository;
+	private FundService fundService;
 	
 	@Autowired
-	private UserHeader userHeader;
+	private UserService userServices;
 	
 	@Autowired
-	private TransactionRepository transactionRepository;
+	private TransactionService transactionService;
 	
 
 	
-	@PostMapping("/stocktradingapp/fund")
+	@PostMapping("/fund")
+	@ApiOperation( value = " fund or deposit your account or wallet by the amount specified",
+	notes ="This Api is used to add deposit or to fund your wallet",
+	response = Message.class )
 	public ResponseEntity<Object> fundMyAccount(@RequestBody FundRequest fundRequest, HttpServletRequest request) {
 		
 		try {
-			User user = userHeader.getUserFromRequestHeader(request);
+			User user = userServices.getUserFromRequestHeader(request);
 			
 			Fund fund = new Fund();
 			fund.setUser_id(user.getId());
@@ -57,14 +58,14 @@ public class FundController {
 			Date date = new Date();
 			Timestamp ts=new Timestamp(date.getTime());
 			fund.setCreated(ts);
-			fund = fundRepository.save(fund);
+			fund = fundService.addNewFund(fund);
 			
 			Date date1 = new Date();
 			Timestamp created =new Timestamp(date1.getTime());
 			
 			//update transactions
 			Transaction trans = new Transaction(user.getId(), fund.getId(), 1, created, fund.getDescription());
-			transactionRepository.save(trans);
+			transactionService.addNewTransaction(trans);
 			
 			
 			Message success = new Message();
@@ -83,10 +84,13 @@ public class FundController {
 		
 	}
 	
-	@GetMapping("/stocktradingapp/funds/balance")
+	@GetMapping("/funds/balance")
+	@ApiOperation( value = " Look for your user balance. get your real time balance",
+	notes ="This Api call use to retrieve user account balance",
+	response = FundList.class )
 	public ResponseEntity<Object> getFunds(HttpServletRequest request) {
 		
-		double balance = userHeader.getUserBalance(request);
+		double balance = fundService.getUserBalance(request);
 		FundList fundList = new FundList();
 		NumberFormat formatter = NumberFormat.getCurrencyInstance();
 		fundList.setBalance(formatter.format(balance));

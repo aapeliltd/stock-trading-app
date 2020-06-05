@@ -7,18 +7,16 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.decagonhq.stocktradingapp.api.filter.JwtFilter;
 import com.decagonhq.stocktradingapp.api.services.CustomUserDetailsService;
-import com.decagonhq.stocktradingapp.api.utility.JsonWebUtility;
 
 @Configuration
 @EnableWebSecurity
@@ -57,7 +55,7 @@ public class ApplicationConfig extends WebSecurityConfigurerAdapter {
 		//we are permitting all the request for login and register
 		http.csrf().disable()
 					.authorizeRequests()
-					.antMatchers("/stocktradingapp/login", "/h2-console/*", "/stocktradingapp/register", "/console/**")
+					.antMatchers("/stocktradingapp/login", "/stocktradingapp/register")
 					.permitAll()
 					.anyRequest()
 					.authenticated()
@@ -66,11 +64,25 @@ public class ApplicationConfig extends WebSecurityConfigurerAdapter {
 					.and()
 					.sessionManagement()
 					.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+					
 		
 		//check filter before request
 		http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 		
 	}
+
+
+	@Override
+	public void configure(WebSecurity web) throws Exception {
+		  web.ignoring().antMatchers("/v2/api-docs",
+                  "/configuration/ui",
+                  "/swagger-resources/**",
+                  "/configuration/security",
+                  "/swagger-ui.html",
+                  "/webjars/**");
+	}
+	
+	
 	
 	
 	
