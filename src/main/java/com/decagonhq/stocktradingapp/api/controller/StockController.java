@@ -48,7 +48,7 @@ import io.swagger.annotations.ApiOperation;
 
 
 @RestController
-@RequestMapping("/stocktradingapp")
+@RequestMapping("/api/v1/stocktradingapp")
 public class StockController {
 	
 	@Autowired
@@ -92,7 +92,7 @@ public class StockController {
 			
 		}
 		HashMap<String, String> map = new HashMap<>();
-		String queryString = String.format("/stocktradingapp/stocks/buy?symbol=%s&company=%s&price=%s&size=%s", symbol, stock.getCompanyName().replaceAll("\\s+",""), stock.getLatestPrice(), stock.getIexRealtimeSize());
+		String queryString = String.format("/api/v1/stocktradingapp/stocks/buy?symbol=%s&company=%s&price=%s&size=%s", symbol, stock.getCompanyName().replaceAll("\\s+",""), stock.getLatestPrice(), stock.getIexRealtimeSize());
 		map.put("buy", queryString);
 		stock.setHref(map);
 		return ResponseEntity.ok(stock);
@@ -172,7 +172,7 @@ public class StockController {
 				List<StockResource> resources = new ArrayList<StockResource>();
 				purchases.forEach(purchase->{
 					HashMap<String, String> map = new HashMap<>();
-					String sellUrl = String.format("/stocktradingapp/stocks/sell/%s", purchase.getId());
+					String sellUrl = String.format("/api/v1/stocktradingapp/stocks/sell/%s", purchase.getId());
 					map.put("Sell", sellUrl);
 					
 					StockResource stock = new StockResource();

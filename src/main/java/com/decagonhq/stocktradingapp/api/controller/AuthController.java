@@ -30,7 +30,7 @@ import com.decagonhq.stocktradingapp.api.utility.JsonWebUtility;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping("/stocktradingapp")
+@RequestMapping("/api/v1/stocktradingapp")
 public class AuthController {
 	
 	

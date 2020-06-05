@@ -55,7 +55,7 @@ public class ApplicationConfig extends WebSecurityConfigurerAdapter {
 		//we are permitting all the request for login and register
 		http.csrf().disable()
 					.authorizeRequests()
-					.antMatchers("/stocktradingapp/login", "/stocktradingapp/register")
+					.antMatchers("/api/v1/stocktradingapp/login", "/api/v1/stocktradingapp/register")
 					.permitAll()
 					.anyRequest()
 					.authenticated()

@@ -26,7 +26,7 @@ import com.decagonhq.stocktradingapp.api.services.UserService;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping("/stocktradingapp")
+@RequestMapping("/api/v1/stocktradingapp")
 public class FundController {
 	
 	
