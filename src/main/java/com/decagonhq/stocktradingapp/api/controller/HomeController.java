@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.decagonhq.stocktradingapp.api.resource.Welcome;
 
 @RestController
-@RequestMapping("/api/v1/stocktradingapp")
+@RequestMapping("/stocktradingapp")
 public class HomeController {
 	
 	@GetMapping
