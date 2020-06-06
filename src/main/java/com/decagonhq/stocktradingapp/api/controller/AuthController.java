@@ -109,8 +109,8 @@ public class AuthController {
 				UserResource userResource = new UserResource();
 				userResource.setEmail(user.getEmail());
 				userResource.setUsername(user.getUserName());
-				map.put("link", "/stocktradingapp/users/"+user.getId());
-				map.put("Account balance", "/stocktradingapp/funds/balance/");
+				map.put("link", "/api/v1/stocktradingapp/users/"+user.getId());
+				map.put("Account balance", "/api/v1/stocktradingapp/funds/balance/");
 				userResource.setHref(map);
 				resources.add(userResource);
 				
@@ -138,7 +138,7 @@ public class AuthController {
 		 UserResource userResource = new UserResource();
 		 userResource.setEmail(user.get().getEmail());
 		 userResource.setUsername(user.get().getUserName());
-		 map.put("link", "/stocktradingapp/users/"+user.get().getId());
+		 map.put("link", "/api/v1/stocktradingapp/users/"+user.get().getId());
 		 map.put("Account balance", "/stocktradingapp/funds/balance/");
 		 userResource.setHref(map);
 		 
